@@ -13,7 +13,11 @@ contract MyNFT is ERC721URIStorage, Ownable {
     string constant TOKEN_URI = "https://ipfs.io/ipfs/QmYuKY45Aq87LeL1R5dhb1hqHLp6ZFbJaCP8jxqKM1MX6y/babe_ruth_1.json";
     uint256 internal tokenId;
 
-    constructor() ERC721("MyNFT", "MNFT") {}
+    constructor() ERC721("MyNFT", "MNFT") {
+        for (uint i = 0; i < 10; i++) {
+            mint(msg.sender);
+        }
+    }
 
     function mint(address to) public onlyOwner {
         _safeMint(to, tokenId);

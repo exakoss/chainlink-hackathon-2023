@@ -1,3 +1,5 @@
 import './cross-chain-mint'
+import './cross-chain-send'
 import './deploy-destination-minter'
 import './deploy-source-minter'
+import './deploy-source-sender'
