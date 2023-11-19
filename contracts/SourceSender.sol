@@ -86,7 +86,7 @@ contract SourceSender is Withdraw {
             receiver: abi.encode(receiver),
             data: abi.encodeWithSignature("mintTokenId(address,uint256)", msg.sender, tokenId),
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 2000000, strict: false})),
+            extraArgs: "",
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
