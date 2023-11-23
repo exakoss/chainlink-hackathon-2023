@@ -22,6 +22,14 @@ export const LINK_ADDRESSES: AddressMap = {
     [`avalancheFuji`]: `0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846`
 };
 
+export const VRF_WRAPPER: AddressMap = {
+    [`ethereumSepolia`]: `0xab18414CD93297B0d12ac29E63Ca20f515b3DB46`,
+    [`polygonMumbai`]: `0x99aFAf084eBA697E584501b8Ed2c0B37Dd136693`,
+    [`optimismGoerli`]: `0x674Cda1Fef7b3aA28c535693D658B42424bb7dBD`,
+    [`arbitrumTestnet`]: `0x674Cda1Fef7b3aA28c535693D658B42424bb7dBD`,
+    [`avalancheFuji`]: `0x9345AC54dA4D0B5Cda8CB749d8ef37e5F02BBb21`
+};
+
 export const routerConfig = {
     ethereumSepolia: {
         address: `0xd0daae2231e9cb96b94c8512223533293c3693bf`,

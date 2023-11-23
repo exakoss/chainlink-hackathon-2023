@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
 // import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {Withdraw} from "./utils/Withdraw.sol";
-import {MyNFT} from "./MyNFT.sol";
+import {MyChainNFT} from "./MyChainNFT.sol";
 
 /**
  * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
@@ -14,7 +14,7 @@ import {MyNFT} from "./MyNFT.sol";
  */
 contract SourceSender is Withdraw {
 
-    MyNFT nft;
+    MyChainNFT nft;
 
     enum PayFeesIn {
         Native,
@@ -27,7 +27,7 @@ contract SourceSender is Withdraw {
     event MessageSent(bytes32 messageId);
 
     constructor(address router, address link, address nftAddress) {
-        nft = MyNFT(nftAddress);
+        nft = MyChainNFT(nftAddress);
         i_router = router;
         i_link = link;
         // LinkTokenInterface(i_link).approve(i_router, type(uint256).max);

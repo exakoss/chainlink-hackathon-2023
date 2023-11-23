@@ -14,7 +14,29 @@ const ARBITRUM_TESTNET_RPC_URL = process.env.ARBITRUM_TESTNET_RPC_URL;
 const AVALANCHE_FUJI_RPC_URL = process.env.AVALANCHE_FUJI_RPC_URL;
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.19",
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.19",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      },
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      }
+    ]
+
+  },
   networks: {
     hardhat: {
       chainId: 31337
