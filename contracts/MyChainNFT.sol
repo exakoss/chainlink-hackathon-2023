@@ -5,22 +5,19 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
-import "@chainlink/contracts/src/v0.8/vrf/VRFV2WrapperConsumerBase.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
+contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
     using Strings for uint256;
     uint256 internal tokenId;
 
     event RequestSent(uint256 requestId, uint32 numWords);
-    event RequestFulfilled(
-        uint256 requestId,
-        uint256[] randomWords,
-        uint256 payment
-    );
+    event RequestFulfilled(uint256 requestId, uint256[] randomWords);
 
     struct RequestStatus {
-        uint256 paid; // amount paid in link
         bool fulfilled; // whether the request has been successfully fulfilled
+        bool exists; // whether a requestId exists
         uint256[] randomWords;
     }
     
@@ -30,6 +27,9 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
     }
 
     mapping(uint256 => RequestStatus) public s_requests;
+    VRFCoordinatorV2Interface COORDINATOR;
+
+    //store Levels for each tokenId
     mapping(uint256 => Levels) public tokenIdToLevels;
     //use this mapping to remember which request ids are associated with which tokenIds
     mapping(uint256 => uint256) public requestIdToTokenId;
@@ -38,12 +38,20 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
     uint256[] public requestIds;
     uint256 public lastRequestId;
 
+    // Your subscription ID.
+    uint64 s_subscriptionId;
+
+    // The gas lane to use, which specifies the maximum gas price to bump to.
+    // For a list of available gas lanes on each network,
+    // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
+    bytes32 keyHash = 0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61;
+
     // Depends on the number of requested values that you want sent to the
     // fulfillRandomWords() function. Test and adjust
     // this limit based on the network that you select, the size of the request,
     // and the processing of the callback request in the fulfillRandomWords()
     // function.
-    uint32 callbackGasLimit = 100000;
+    uint32 callbackGasLimit = 2000000;
 
     // The default is 3, but you can set this higher.
     uint16 requestConfirmations = 3;
@@ -52,11 +60,14 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
     // Cannot exceed VRFV2Wrapper.getConfig().maxNumWords.
     uint32 numWords = 2;
 
-    constructor(address initialOwner, address link, address wrapperAddress)
+    constructor(address initialOwner, uint64 subscriptionId, address coordinatorAddress)
         Ownable(initialOwner)
         ERC721("MyChainNFT", "MCNFT")
-        VRFV2WrapperConsumerBase(link, wrapperAddress)
+        VRFConsumerBaseV2(coordinatorAddress)
     {
+        //Setup VRF
+        COORDINATOR = VRFCoordinatorV2Interface(coordinatorAddress);
+        s_subscriptionId = subscriptionId;
         //Mint first 10 NFTs to the owner for easier testing
         for (uint i = 0; i < 10; i++) {
             mint(msg.sender);
@@ -115,24 +126,13 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
         }
     }
 
-    function mintTokenId(address to, uint256 _tokenId) public onlyOwner {
+    function mintTokenId(address to, uint256 _tokenId) external onlyOwner returns (uint256 requestId) {
         _safeMint(to, _tokenId);
-        requestRandomWords(_tokenId);
-    }
-
-    //VRF part
-    function requestRandomWords(uint256 _tokenId)
-        internal
-        returns (uint256 requestId)
-    {
-        requestId = requestRandomness(
-            callbackGasLimit,
-            requestConfirmations,
-            numWords
-        );
+        //VRF requestRandomWord logic goes here
+        requestId = COORDINATOR.requestRandomWords(keyHash, s_subscriptionId, requestConfirmations, callbackGasLimit, numWords);
         s_requests[requestId] = RequestStatus({
-            paid: VRF_V2_WRAPPER.calculateRequestPrice(callbackGasLimit),
             randomWords: new uint256[](0),
+            exists: true,
             fulfilled: false
         });
         requestIds.push(requestId);
@@ -142,11 +142,12 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
         return requestId;
     }
 
+    //VRF Callback
     function fulfillRandomWords(
         uint256 _requestId,
         uint256[] memory _randomWords
     ) internal override {
-        require(s_requests[_requestId].paid > 0, "request not found");
+        require(s_requests[_requestId].exists, "request not found");
         s_requests[_requestId].fulfilled = true;
         s_requests[_requestId].randomWords = _randomWords;
 
@@ -156,14 +157,18 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFV2WrapperConsumerBase {
 
         uint256 _tokenId = requestIdToTokenId[_requestId];
         tokenIdToLevels[_tokenId] = Levels(attack,defense);
-
         _setTokenURI(_tokenId, tokenURI(_tokenId));
 
-        emit RequestFulfilled(
-            _requestId,
-            _randomWords,
-            s_requests[_requestId].paid
-        );
+        emit RequestFulfilled(_requestId, _randomWords);
+    }
+
+    //VRF Request Status check
+    function getRequestStatus(
+        uint256 _requestId
+    ) external view returns (bool fulfilled, uint256[] memory randomWords) {
+        require(s_requests[_requestId].exists, "request not found");
+        RequestStatus memory request = s_requests[_requestId];
+        return (request.fulfilled, request.randomWords);
     }
 
 }
