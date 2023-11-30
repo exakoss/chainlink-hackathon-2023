@@ -114,7 +114,7 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
                 '"description": "My chain NFT stats onchain",',
                 '"image_data": "', generateCharacter(_tokenId), '",',
                 '"attributes": [',
-                    '{"trait_type": "Melle Attack", "value": "', meleeAttackStr, '"},',
+                    '{"trait_type": "Melee Attack", "value": "', meleeAttackStr, '"},',
                     '{"trait_type": "Melee Defense", "value": "', meleeDefenseStr, '"}',
                 ']',
             '}'
