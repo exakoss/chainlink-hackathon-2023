@@ -4,7 +4,7 @@ import { getPrivateKey, getProviderRpcUrl, getRouterConfig } from "./utils";
 import { Wallet, JsonRpcProvider, BigNumberish} from "ethers";
 import { DestinationMinter, DestinationMinter__factory, MyChainNFT, MyChainNFT__factory } from "../typechain-types";
 import { Spinner } from "../utils/spinner";
-import { LINK_ADDRESSES, VRF_COORDINATOR } from './constants';
+import { LINK_ADDRESSES, VRF_COORDINATOR, VRF_KEYHASH } from './constants';
 
 task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol smart contracts`)
     .addOptionalParam(`router`, `The address of the Router contract on the destination blockchain`)
@@ -13,6 +13,7 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
         const linkAddress = taskArguments.link ? taskArguments.link : LINK_ADDRESSES[hre.network.name];
         // const wrapperAddress = taskArguments.wrapper ? taskArguments.wrapper : VRF_WRAPPER[hre.network.name];
         const coordinatorAddress = taskArguments.coordinator ? taskArguments.coordinator : VRF_COORDINATOR[hre.network.name];
+        const keyhash = taskArguments.keyhash ? taskArguments.keyhash : VRF_KEYHASH[hre.network.name];
 
         //7263 for Ethereum Sepolia
         //795 for Avalanche Fuji
@@ -31,7 +32,7 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
         spinner.start();
 
         const myChainNftFactory: MyChainNFT__factory = await hre.ethers.getContractFactory('MyChainNFT') as MyChainNFT__factory;
-        const myChainNft: MyChainNFT = await myChainNftFactory.deploy(deployer.address, subscriptionId, coordinatorAddress);
+        const myChainNft: MyChainNFT = await myChainNftFactory.deploy(deployer.address, subscriptionId, coordinatorAddress, keyhash);
         await myChainNft.waitForDeployment();
 
         console.log(`✅ MyChainNFT contract deployed at address ${await myChainNft.getAddress()} on the ${hre.network.name} blockchain`)

@@ -38,6 +38,14 @@ export const VRF_WRAPPER: AddressMap = {
     [`avalancheFuji`]: `0x9345AC54dA4D0B5Cda8CB749d8ef37e5F02BBb21`
 };
 
+export const VRF_KEYHASH: AddressMap = {
+    [`ethereumSepolia`]: `0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c`,
+    [`polygonMumbai`]: `0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f`,
+    [`optimismGoerli`]: `0x674Cda1Fef7b3aA28c535693D658B42424bb7dBD`,
+    [`arbitrumTestnet`]: `0x83d1b6e3388bed3d76426974512bb0d270e9542a765cd667242ea26c0cc0b730`,
+    [`avalancheFuji`]: `0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61`
+};
+
 export const routerConfig = {
     ethereumSepolia: {
         address: `0xd0daae2231e9cb96b94c8512223533293c3693bf`,

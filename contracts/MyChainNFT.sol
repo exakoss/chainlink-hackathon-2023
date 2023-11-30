@@ -44,7 +44,8 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
     // The gas lane to use, which specifies the maximum gas price to bump to.
     // For a list of available gas lanes on each network,
     // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
-    bytes32 keyHash = 0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61;
+    // bytes32 keyHash = 0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61;
+    bytes32 keyHash;
 
     // Depends on the number of requested values that you want sent to the
     // fulfillRandomWords() function. Test and adjust
@@ -60,13 +61,14 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
     // Cannot exceed VRFV2Wrapper.getConfig().maxNumWords.
     uint32 numWords = 2;
 
-    constructor(address initialOwner, uint64 subscriptionId, address coordinatorAddress)
+    constructor(address initialOwner, uint64 subscriptionId, address coordinatorAddress, bytes32 _keyhash)
         Ownable(initialOwner)
         ERC721("MyChainNFT", "MCNFT")
         VRFConsumerBaseV2(coordinatorAddress)
     {
         //Setup VRF
         COORDINATOR = VRFCoordinatorV2Interface(coordinatorAddress);
+        keyHash = _keyhash;
         s_subscriptionId = subscriptionId;
         //Mint first 10 NFTs to the owner for easier testing
         for (uint i = 0; i < 10; i++) {
@@ -100,21 +102,32 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
         return levels;
     }
 
-    function tokenURI(uint256 _tokenId) override(ERC721URIStorage) public view returns (string memory){
+    function tokenURI(uint256 _tokenId) override(ERC721URIStorage) public view returns (string memory) {
+        Levels memory _levels = tokenIdToLevels[_tokenId];
+        string memory tokenIdStr = Strings.toString(_tokenId);
+        string memory meleeAttackStr = Strings.toString(_levels.meleeAttack);
+        string memory meleeDefenseStr = Strings.toString(_levels.meleeDefense);
+
         bytes memory dataURI = abi.encodePacked(
             '{',
-                '"name": "My Chain NFT #', _tokenId.toString(), '",',
+                '"name": "My Chain NFT #', tokenIdStr, '",',
                 '"description": "My chain NFT stats onchain",',
-                '"image_data": "', generateCharacter(_tokenId), '"'
+                '"image_data": "', generateCharacter(_tokenId), '",',
+                '"attributes": [',
+                    '{"trait_type": "Melle Attack", "value": "', meleeAttackStr, '"},',
+                    '{"trait_type": "Melee Defense", "value": "', meleeDefenseStr, '"}',
+                ']',
             '}'
         );
-        return string(
+
+    return string(
         abi.encodePacked(
             "data:application/json;base64,",
             Base64.encode(dataURI)
         )
-        );
-    }
+    );
+}
+
 
     //Minting
     function mint(address to) public onlyOwner {
