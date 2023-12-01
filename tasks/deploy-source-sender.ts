@@ -2,7 +2,7 @@ import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment, TaskArguments } from "hardhat/types";
 import { getPrivateKey, getProviderRpcUrl, getRouterConfig } from "./utils";
 import { Wallet, JsonRpcProvider } from "ethers";
-import { SourceSender, SourceSender__factory } from "../typechain-types";
+import { SourceSender, SourceSender__factory, MyChainNFT, MyChainNFT__factory } from "../typechain-types";
 import { Spinner } from "../utils/spinner";
 import { LINK_ADDRESSES } from "./constants";
 
@@ -31,6 +31,16 @@ task(`deploy-source-sender`, `Deploys SourceMinter.sol smart contract`)
         const sourceSender: SourceSender = await sourceSenderFactory.deploy(routerAddress, linkAddress, nftAddress);
         await sourceSender.waitForDeployment();
 
-        spinner.stop();
         console.log(`✅ SourceSender contract deployed at address ${await sourceSender.getAddress()} on the ${hre.network.name} blockchain`);
+
+        console.log(`Attempting to grant the sender approval of all NFT token on the ${hre.network.name} blockchain`);
+
+        const myChainNft: MyChainNFT = MyChainNFT__factory.connect(nftAddress, deployer)
+
+        const tx = await myChainNft.setApprovalForAll(await sourceSender.getAddress(),true)
+        await tx.wait()
+
+        console.log(`✅ SourceSender now has approvalAll of MyChainNFTs. Transaction hash: ${tx.hash}`);
+
+        spinner.stop();
     })

@@ -17,7 +17,8 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
 
         //7263 for Ethereum Sepolia
         //795 for Avalanche Fuji
-        const subscriptionId: BigNumberish = 795
+        //6596 for polygonMumbai
+        const subscriptionId: BigNumberish = 6596
 
         const privateKey = getPrivateKey();
         const rpcProviderUrl = getProviderRpcUrl(hre.network.name);
@@ -38,29 +39,22 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
         console.log(`✅ MyChainNFT contract deployed at address ${await myChainNft.getAddress()} on the ${hre.network.name} blockchain`)
         spinner.stop();
 
-        // console.log(`ℹ️  Attempting to mintTokenId from the smart contract on the ${hre.network.name} blockchain using ${deployer.address} address`);
+        console.log(`ℹ️  Attempting to deploy DestinationMinter smart contract on the ${hre.network.name} blockchain using ${deployer.address} address, with the Router address ${routerAddress} provided as constructor argument`);
+        spinner.start();
 
-        // const tx = await myChainNft.mintTokenId(deployer.address, 33)
-        // await tx.wait()
+        const destinationMinterFactory: DestinationMinter__factory = await hre.ethers.getContractFactory('DestinationMinter') as DestinationMinter__factory;
+        const destinationMinter: DestinationMinter = await destinationMinterFactory.deploy(routerAddress, await myChainNft.getAddress());
+        await destinationMinter.waitForDeployment();
 
-        // spinner.stop();
+        spinner.stop();
+        console.log(`✅ DestinationMinter contract deployed at address ${await destinationMinter.getAddress()} on the ${hre.network.name} blockchain`);
 
-        // console.log(`ℹ️  Attempting to deploy DestinationMinter smart contract on the ${hre.network.name} blockchain using ${deployer.address} address, with the Router address ${routerAddress} provided as constructor argument`);
-        // spinner.start();
+        console.log(`ℹ️  Attempting to grant the minter role to the DestinationMinter smart contract`);
+        spinner.start();
 
-        // const destinationMinterFactory: DestinationMinter__factory = await hre.ethers.getContractFactory('DestinationMinter') as DestinationMinter__factory;
-        // const destinationMinter: DestinationMinter = await destinationMinterFactory.deploy(routerAddress, await myChainNft.getAddress());
-        // await destinationMinter.waitForDeployment();
+        const tx = await myChainNft.transferOwnership(await destinationMinter.getAddress());
+        await tx.wait();
 
-        // spinner.stop();
-        // console.log(`✅ DestinationMinter contract deployed at address ${await destinationMinter.getAddress()} on the ${hre.network.name} blockchain`);
-
-        // console.log(`ℹ️  Attempting to grant the minter role to the DestinationMinter smart contract`);
-        // spinner.start();
-
-        // const tx = await myChainNft.transferOwnership(await destinationMinter.getAddress());
-        // await tx.wait();
-
-        // spinner.stop();
-        // console.log(`✅ DestinationMinter can now mint MyNFTs. Transaction hash: ${tx.hash}`);
+        spinner.stop();
+        console.log(`✅ DestinationMinter can now mint MyNFTs. Transaction hash: ${tx.hash}`);
     })
