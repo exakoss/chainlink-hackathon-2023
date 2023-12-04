@@ -18,7 +18,7 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
         //7263 for Ethereum Sepolia
         //795 for Avalanche Fuji
         //6596 for polygonMumbai
-        const subscriptionId: BigNumberish = 6596
+        const subscriptionId: BigNumberish = 795
 
         const privateKey = getPrivateKey();
         const rpcProviderUrl = getProviderRpcUrl(hre.network.name);

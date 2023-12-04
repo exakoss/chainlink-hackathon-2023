@@ -52,7 +52,7 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
     // this limit based on the network that you select, the size of the request,
     // and the processing of the callback request in the fulfillRandomWords()
     // function.
-    uint32 callbackGasLimit = 1200000;
+    uint32 callbackGasLimit = 2000000;
 
     // The default is 3, but you can set this higher.
     uint16 requestConfirmations = 3;
@@ -71,9 +71,9 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
         keyHash = _keyhash;
         s_subscriptionId = subscriptionId;
         //Mint first 10 NFTs to the owner for easier testing
-        for (uint i = 0; i < 10; i++) {
-            mint(msg.sender);
-        }
+        // for (uint i = 0; i < 10; i++) {
+        //     mint(msg.sender);
+        // }
     }
 
     //Metadata related
@@ -139,9 +139,16 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2 {
         }
     }
 
-    function mintTokenId(address to, uint256 _tokenId) external onlyOwner returns (uint256 requestId) {
+    function mintTokenId(address to, uint256 _tokenId) public onlyOwner {
         _safeMint(to, _tokenId);
-        //VRF requestRandomWord logic goes here
+        tokenIdToLevels[_tokenId] = Levels(1,1);
+        _setTokenURI(_tokenId, tokenURI(_tokenId));
+    }
+
+    //VRF Call
+    function randomizeLevels(uint256 _tokenId) external returns (uint256 requestId) {
+        // The caller has to own the nft before randomizing its leves 
+        require(ownerOf(_tokenId) == msg.sender, "mintTokenId: You must own the NFT to randomize its levels.");
         requestId = COORDINATOR.requestRandomWords(keyHash, s_subscriptionId, requestConfirmations, callbackGasLimit, numWords);
         s_requests[requestId] = RequestStatus({
             randomWords: new uint256[](0),
