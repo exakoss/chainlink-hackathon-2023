@@ -46,6 +46,24 @@ export const VRF_KEYHASH: AddressMap = {
     [`avalancheFuji`]: `0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61`
 };
 
+export const FUNCTIONS_DON_ID: AddressMap = {
+    [`ethereumSepolia`]: `0xb83E47C2bC239B3bf370bc41e1459A34b41238D0`,
+    [`polygonMumbai`]: `0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C`,
+    //OP and ARB are disabled for functions
+    [`optimismGoerli`]: `0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0`,
+    [`arbitrumTestnet`]: `0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0`,
+    [`avalancheFuji`]: `0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0`
+};
+
+export const FUNCTIONS_ROUTER: AddressMap = {
+    [`ethereumSepolia`]: `0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000`,
+    [`polygonMumbai`]: `0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000`,
+    //OP and ARB are disabled for functions
+    [`optimismGoerli`]: `0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0`,
+    [`arbitrumTestnet`]: `0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0`,
+    [`avalancheFuji`]: `0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0`
+};
+
 export const routerConfig = {
     ethereumSepolia: {
         address: `0xd0daae2231e9cb96b94c8512223533293c3693bf`,

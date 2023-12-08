@@ -72,7 +72,7 @@ const config: HardhatUserConfig = {
       goerli: process.env.ETHERSCAN_API_KEY || '',
       sepolia: process.env.ETHERSCAN_API_KEY || '',
       polygonMumbai: process.env.POLYGON_API_KEY || '',
-      avalancheFujiTestnet: process.env.AVALANCHE_API_KEY || '',
+      avalancheFujiTestnet: 'snowtrace',
       'arbitrum-goerli': process.env.ARBITRUM_API_KEY || '',
       'optimism-goerli': process.env.OPTIMISTIC_API_KEY || '',
     },
