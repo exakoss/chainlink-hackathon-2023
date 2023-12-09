@@ -15,6 +15,7 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
         const coordinatorAddress = taskArguments.coordinator ? taskArguments.coordinator : VRF_COORDINATOR[hre.network.name];
         const keyhash = taskArguments.keyhash ? taskArguments.keyhash : VRF_KEYHASH[hre.network.name];
 
+        //VRF subscription ID
         //7263 for Ethereum Sepolia
         //795 for Avalanche Fuji
         //6596 for polygonMumbai
@@ -33,7 +34,7 @@ task(`deploy-mychain-nft`, `Deploys MyChainNFT.sol and DestinationMinter.sol sma
         spinner.start();
 
         const myChainNftFactory: MyChainNFT__factory = await hre.ethers.getContractFactory('MyChainNFT') as MyChainNFT__factory;
-        const myChainNft: MyChainNFT = await myChainNftFactory.deploy(deployer.address, subscriptionId, coordinatorAddress, keyhash);
+        const myChainNft: MyChainNFT = await myChainNftFactory.deploy(subscriptionId, coordinatorAddress, keyhash);
         await myChainNft.waitForDeployment();
 
         console.log(`✅ MyChainNFT contract deployed at address ${await myChainNft.getAddress()} on the ${hre.network.name} blockchain`)
