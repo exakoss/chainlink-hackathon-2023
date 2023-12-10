@@ -62,7 +62,7 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2, FunctionsCl
     uint64 s_subscriptionId;
 
     //Link that returns a link DALEE generated PNG is hosted deterministically
-    string constant lastImageLink = "https://png7-se7exr4oxa-ue.a.run.app/get-last-image-link";
+    string constant lastImageLink = "https://png9-se7exr4oxa-ue.a.run.app/get-last-image-link";
 
     //Callback gas limit for Chainlink Functions
     uint32 functionsGasLimit = 300000;
@@ -83,7 +83,7 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2, FunctionsCl
         "const meleeAttack = args[0];"
         "const meleeDefense = args[1];"
         "const pngResponse = await Functions.makeHttpRequest({"
-        "url: `https://png7-se7exr4oxa-ue.a.run.app/get-generate-png?meleeAttack=${meleeAttack}&meleeDefense=${meleeDefense}`"
+        "url: `https://png9-se7exr4oxa-ue.a.run.app/get-generate-png?meleeAttack=${meleeAttack}&meleeDefense=${meleeDefense}`"
         "});"
         "if (pngResponse.error) {"
         "throw Error('PNG request failed');"
@@ -136,7 +136,7 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2, FunctionsCl
             '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350">',
             '<style>.base { fill: white; font-family: serif; font-size: 14px; }</style>',
             '<rect width="100%" height="100%" fill="black" />',
-            '<text x="50%" y="20%" class="base" dominant-baseline="middle" text-anchor="middle">',"Warrior",'</text>',
+            '<text x="50%" y="20%" class="base" dominant-baseline="middle" text-anchor="middle">',"Wizard",'</text>',
             '<text x="50%" y="40%" class="base" dominant-baseline="middle" text-anchor="middle">', "Melee Attack: ", Strings.toString(levels.meleeAttack) ,'</text>',
             '<text x="50%" y="60%" class="base" dominant-baseline="middle" text-anchor="middle">', "Melee Defense: ", Strings.toString(levels.meleeDefense),'</text>',
             '</svg>'
@@ -162,8 +162,8 @@ contract MyChainNFT is ERC721URIStorage, Ownable, VRFConsumerBaseV2, FunctionsCl
 
         bytes memory dataURI = abi.encodePacked(
             '{',
-                '"name": "My Chain NFT #', tokenIdStr, '",',
-                '"description": "My chain NFT stats onchain",',
+                '"name": "3x Battle Wizards #', tokenIdStr, '",',
+                '"description": "Chainlink Hackathon 2023",',
                 '"image_data": "', generateCharacter(_tokenId), '",',
                 '"attributes": [',
                     '{"trait_type": "Melee Attack", "value": "', meleeAttackStr, '"},',
